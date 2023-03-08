@@ -19,7 +19,7 @@
 \usepackage{float}
 \usepackage{booktabs}
 
-
+\usepackage{wrapfig}
 % per le accentate
 \usepackage[utf8]{inputenc}
 %
@@ -93,7 +93,7 @@ This service is usually a platform where users can log on and start a game from 
 This company includes different types of workers. In this project, the part of the company providing the service is assumed to include:
 \begin{itemize}
 \item{\textbf{The cloud gaming service:}the platform with which users interact;}
-\item{\textbf{The financial team:} which is responsible for managing the budget and making strategic choices;}
+\item{\textbf{The financial \& Management team:} which is responsible for managing the budget and making strategic choices;}
 \item{\textbf{The cloud gaming service:} employed in maintaining the hardware and software of the cloud computing service.}
 \end{itemize}
 %
@@ -313,13 +313,184 @@ KPIs are used to measure the results achieved by the organization.\\ In the case
 \label{KPi }
 \end{figure} 
 
+
+\chapter{Implementation on AWS}
+In this chapter will be implemented a possible solution of a cloud gaming platform on AWS.\\\\
+AWS stands for Amazon Web Services, which is a cloud computing platform provided by Amazon. AWS offers a wide range of cloud-based services, including computing power, database storage, content delivery, and other functionality to help businesses scale and grow. The platform provides flexible, scalable, and cost-effective cloud computing solutions for businesses of all sizes, from startups to large enterprises. With AWS, users can quickly provision resources and scale their infrastructure as needed, paying only for what they use.\\\\
+In particular, in this section will be delve into the various components that are used to build this platform and their purpose.\\
+The entire architecture will be serverless meaning that a model of software design and deployment that eliminates the need for server infrastructure management by the developer. In a serverless architecture, the cloud provider takes responsibility for managing the infrastructure and running the server, allowing the developer to focus on writing code. This approach is also referred to as Function-as-a-Service (FaaS), where functions are invoked in response to events triggered by user actions or system events. The main benefit of a serverless architecture is that it eliminates the need for upfront infrastructure investment, enabling rapid scaling and reducing operational costs.
+%
+\begin{figure}[H]
+ \centering
+\includegraphics[scale=0.35]{img/AWS_BPMN}
+\caption{Architecture Diagram}
+\label{AWS Architecture Diagram }
+\end{figure} 
+\section{AWS Work Flow}
+This implementation demonstrates a potential architecture for a cloud gaming platform. Users can register or log in using AWS Cognito. DNS linking and request balancing are managed by Route 53 and CloudFront. S3 enables access to the game library via CloudFront, while API Gateway, combined with Lambda, creates a REST API for accessing game files, player data, raising support team requests, or initiating a game session. If a game session is initiated, Step Functions orchestrate the possible subscription control. If there is no subscription, Step Functions direct the user to subscribe. If there is already an active subscription, Gamelift is utilized to initiate the game. Gamelift manages all game aspects, including resource provisioning, user queues, finding users with similar game characteristics, and more. CloudWatch monitors any issues, logs, and displays information on a dashboard for the company.
+\section{AWS Services}
+
+%
+\begin{wrapfigure}{r}{0.25\textwidth}
+  \centering
+  \includegraphics[width=0.2\textwidth]{img/services/cognito}
+\end{wrapfigure}
+%
+%
+\paragraph{Amazon Cognito} is a product that provides user authentication, authorization, and user management services to web and mobile applications. It is designed to provide a simple and secure way for developers to add user sign-up, sign-in, and access control to their applications.\\
+With Amazon Cognito the users can do sign-up and sign-in on the platform. It also supports user authentication with popular third-party identity providers such as Facebook, Google, and Amazon, making it easy for users to sign up and sign in to applications with their existing social media accounts.\\\\
+%
+%
+%
+\begin{wrapfigure}{l}{0.25\textwidth}
+  \centering
+  \includegraphics[width=0.2\textwidth]{img/services/Route-53}
+\end{wrapfigure}
+%
+\paragraph{Amazon Route 53} is a highly scalable and reliable Domain Name System (DNS) service offered by Amazon Web Services (AWS). It provides a way to route traffic for domains to different AWS resources.\\
+Route 53 also provides features like DNS failover, health checks, latency-based routing, and geo DNS. These features enable users to create highly available and fault-tolerant systems that can withstand infrastructure failures and traffic spikes.\\
+With Amazon Route 53 manages DNS resolution and the routing of web traffic generated by users worldwide.\\\\
+%
+%
+%
+\begin{wrapfigure}{r}{0.25\textwidth}
+  \centering
+  \includegraphics[width=0.2\textwidth]{img/services/CloudFront}
+\end{wrapfigure}
+%
+\paragraph{Amazon CloudFront} is a content delivery network (CDN) service provided by Amazon Web Services (AWS). It delivers content, including web pages, videos, and other types of digital media, from AWS edge locations worldwide to end-users.\\
+CloudFront is designed to improve the performance, security, and availability of web applications and content by caching content at edge locations close to end-users. This reduces latency and minimizes the load on the origin server.\\\\
+CloudFront is a powerful CDN service that helps improve the performance, security, and scalability of web applications and content delivery for this reason it plays a crucial role in managing the content required by users by being positioned ahead of the web platform's API to improve the performance of requests.\\\\
+%
+%
+%
+\begin{wrapfigure}{l}{0.25\textwidth}
+  \centering
+  \includegraphics[width=0.2\textwidth]{img/services/S3}
+\end{wrapfigure}
+%
+\paragraph{Amazon S3}  is a cloud-based object storage service provided by AWS. It provides a scalable and secure platform for storing and retrieving data, such as images, videos, documents, and other types of digital files.\\
+S3 provides high durability, availability, and security of data, achieved by automatically replicating data across multiple geographically distributed data centers and providing strong security controls, such as encryption in transit and at rest.\\
+S3 supports a wide range of use cases, from simple storage and retrieval of files to more complex workflows involving data processing, backup and archival, content distribution, and website hosting. It provides different storage classes to meet different requirements, such as standard storage for frequently accessed data, infrequent access storage for less frequently accessed data, and archive storage for long-term data retention.\\
+S3 integrates with other AWS services, such as AWS Lambda, Amazon CloudFront and ensure high  scalable and high-performance applications quickly and easily. In this particular case, it was utilized for storing game files, such as images, videos, and builds. Additionally, it provides a user-friendly web interface for integrating the web platform library, where users can easily select their preferred games.\\\\
+%
+%
+%
+\begin{wrapfigure}{r}{0.25\textwidth}
+  \centering
+  \includegraphics[width=0.2\textwidth]{img/services/API-Gateway}
+\end{wrapfigure}
+%
+\paragraph{Amazon API Gateway} is a fully managed service provided by AWS that makes it easy to create, deploy, and manage APIs at any scale. With API Gateway, can create APIs that act as a front door for applications to access data, business logic, or functionality from backend services like in this case Backend logic from AWS Lambda,but it could works with other any HTTP endpoint.\\
+%
+API Gateway handles all the tasks involved in securely accepting and processing API requests, including traffic management, authorization and access control, monitoring and analytics, and API version management. It supports a range of API protocols, including RESTful APIs and WebSocket APIs, and provides several options for integrating with backend services, such as Lambda functions and HTTP/HTTPS endpoints.\\
+%
+In this scenario,  when a user requests a game, API Gateway can handle the task of calling the backend application through the use of APIs. It is particularly powerful when linked to AWS Lambda, which can manage all of the logic for the web platform. With API Gateway, developers can easily manage the entire process of securely accepting and processing API requests, including traffic management, authorization, monitoring, and API version management. \\\\
+%
+%
+%
+\begin{wrapfigure}{l}{0.25\textwidth}
+  \centering
+  \includegraphics[width=0.2\textwidth]{img/services/Lambda}
+\end{wrapfigure}
+%
+\paragraph{Amazon Lambda} is a serverless compute service provided by AWS that allows to run code in response to events or triggers, without the need to provision or manage servers. With Lambda, can upload their code in the form of a function and define the events or triggers that will invoke that function. Lambda is a fully managed service, which means that AWS handles all aspects of the infrastructure management, security, and availability of the service, allowing developers to focus on writing code and building applications.\\
+Lambda functions can be triggered by a wide range of event sources, including HTTP requests through API Gateway, file uploads to Amazon S3, messages sent to Amazon SNS or Amazon SQS, changes in data stored in Amazon DynamoDB or integrates with step function. All these possibility were used in this project in several Lambda functions.\\
+Specifically, one Lambda function was used to retrieve game information from DynamoDB and images and build games from S3 after an API call. Another Lambda function was used to retrieve player data from DynamoDB, manage SQS in case of problem reporting, and integrate with Step Functions to manage the flow before starting the game. Finally, another Lambda function was used to manage matchmaking during the game.\\\\
+%
+%
+%
+\begin{wrapfigure}{r}{0.25\textwidth}
+  \centering
+  \includegraphics[width=0.2\textwidth]{img/services/DynamoDB}
+\end{wrapfigure}
+%
+\paragraph{Amazon DynamoDB} is a fully managed NoSQL database service provided by AWS. It is designed to provide fast and flexible storage for applications that require low latency and high scalability.  It supports key-value and document data models, which allows developers to choose the most appropriate data model for their application.\\
+DynamoDB is a highly available and durable service that automatically replicates data across multiple Availability Zones to ensure data durability and availability this features are perfect for this specific use case. It also provides built-in security features, such as encryption at rest and in transit, to help protect user data.\\
+DynamoDB played a crucial role in this project by providing a storage solution for game information, player data, and matchmaking. This component was particularly important as it significantly improved the application's speed and overall user experience.\\\\
+%
+%
+%
+\begin{wrapfigure}{l}{0.25\textwidth}
+  \centering
+  \includegraphics[width=0.2\textwidth]{img/services/Step-Functions}
+\end{wrapfigure}
+%
+\paragraph{Amazon Step Functions}  is a serverless workflow service provided by AWS that allows developers to coordinate distributed applications and microservices using visual workflows. It enables the creation of serverless workflows that integrate with other AWS services and third-party APIs, enabling the creation of complex, long-running workflows.
+Step Functions provides a visual interface for designing and orchestrating workflows. It used to define the sequence of steps, conditional logic, and error handling for each step in the workflow. \\
+In this scenario, the payment process is orchestrated using Step Functions. A defined workflow is utilized to check whether the user is subscribed or not. If the user is subscribed, they will be permitted to proceed and play the game. On the other hand, if the user is not subscribed, they will be required to subscribe before they can play on the platform.\\\\
+%
+%
+\begin{wrapfigure}{r}{0.25\textwidth}
+  \centering
+  \includegraphics[width=0.2\textwidth]{img/services/GameLift}
+\end{wrapfigure}
+%
+\paragraph{Amazon Gamelift} is a managed service offered by AWS that enables developers to deploy, operate, and scale dedicated game servers in the cloud. GameLift provides tools to manage sessions, players, and scaling capacity based on game traffic. It supports both real-time multiplayer games and games with a large number of concurrent players. With GameLift, developers can focus on creating great gameplay experiences while AWS manages the infrastructure required to run dedicated game servers at scale.\\\\ 
+In this example, Amazon GameLift resources are utilized to host game servers and matchmaking functionality.GameLift FlexMatch publishes an event to Amazon SNS on matchmaking success.\\ The deployment includes the following components:
+\begin{itemize}
+\item \textbf{FlexMatch Matchmaking} rule set, which defines players based on their experience, play hours, and skill levels. This information is stored in the backend service using DynamoDB.The FlexMatch rule set also specifies a latency threshold to reduce the occurrence of lags.
+
+\item \textbf{FlexMatch matchmaking configuration} utilizes the rule set and directs game session placement requests to the queue.
+
+\item \textbf{GameLift Queue} is responsible for placing game sessions on the GameLift Fleet. The example features a single fleet behind the queue, which is located in two regional locations (home region and one secondary region).
+
+\item \textbf{GameLift Fleet}, located behind the queue, employs the latest game server build and runs on Amazon Linux 2. It has two regional locations and each instance runs two game server processes. Depending on the instance size and resource requirements of the game server, more game servers can be packed onto each instance.
+\end{itemize}
+\newpage
+
+
+%
+%
+%
+\begin{wrapfigure}{l}{0.25\textwidth}
+  \centering
+  \includegraphics[width=0.2\textwidth]{img/services/SNS}
+\end{wrapfigure}
+%
+\paragraph{Amazon Amazon Simple Notification Service} or SNS is a fully managed messaging service provided by AWS. It enables the creation, publishing, and distribution of messages to a large number of subscribers or other distributed services.\\
+SNS operates on a publish/subscribe model, where publishers send messages to SNS topics, and subscribers receive messages from those topics. Topics can be thought of as communication channels that group together messages of similar interest, such as notifications for a specific application or alerts for a particular event.
+In this scenario, Amazon Simple Notification Service (SNS) is utilized to initiate the execution of a subscribed AWS Lambda function for ticket processing. SNS acts as a messaging service that facilitates the distribution of messages or events to a Lambda function subscribed to a specific topic.
+When a message is published to an SNS topic, all the subscribed Lambda functions are triggered to execute their associated code. This event-driven architecture allows the Lambda function to be invoked in response to the published message, ensuring that the relevant processing takes place.\\\\
+%
+%
+%
+\begin{wrapfigure}{r}{0.25\textwidth}
+  \centering
+  \includegraphics[width=0.2\textwidth]{img/services/SQS}
+\end{wrapfigure}
+%
+\paragraph{Amazon Simple Queue Service} or SQS is a fully managed message queuing service provided by AWS. It enables decoupling of components and distributed systems by allowing messages to be sent, stored, and retrieved asynchronously between different software components, systems, or services.
+SQS operates on a simple queue model, where messages are placed in a queue and then retrieved by one or more consumer components, which may be running on separate systems or instances. SQS provides a reliable and scalable infrastructure that ensures that messages are stored safely and that they are only delivered once.\\
+SQS supports two types of queues: Standard and FIFO. Standard queues provide at-least-once delivery guarantee and are designed for high throughput, where ordering of messages is not critical. FIFO queues provide first-in-first-out delivery and ordering of messages is guaranteed, making them ideal for scenarios where sequencing and deduplication of messages are important, such as financial transactions or workflow processing. Second kind of SQS it was used on this project for manage the report problem. In this project, the second type of Amazon SQS was utilized for efficient management of reported issues. Specifically, users were able to notify the support team of any platform or game bugs by sending an email to a dedicated email address.\\\\
+
+%
+%
+%
+\begin{wrapfigure}{l}{0.25\textwidth}
+  \centering
+  \includegraphics[width=0.2\textwidth]{img/services/CloudWatch}
+\end{wrapfigure}
+%
+\paragraph{Amazon CloudWatch} is a monitoring and observability service provided by AWS that allows users to collect, monitor, and analyze various metrics, logs, and events from AWS resources, applications, and services. CloudWatch provides a unified view of an organization's cloud resources and applications, enabling them to gain insights into their operational health and performance, troubleshoot issues, and optimize resource utilization.\\
+CloudWatch supports monitoring of various metrics, such as CPU utilization, network traffic, and storage capacity, for EC2 instances, databases, load balancers, and other AWS resources. Additionally, CloudWatch can also collect logs and events from various sources, such as AWS Lambda functions, API Gateway, and CloudTrail, allowing users to analyze and troubleshoot issues in real-time.\\
+CloudWatch provides a variety of features, including dashboards, alarms, and automated actions, that enable users to proactively monitor and respond to changes in their resources or applications. Users can create customizable dashboards to visualize their metrics and logs, set alarms to notify them of critical events or changes, and configure automated actions, such as scaling resources, based on certain thresholds or patterns.
+In this project, this particular component played a crucial role in monitoring all aspects of the platform by collecting and providing comprehensive information.\\\\
+%
+%
+
 \chapter{Conclusion}
 In conclusion, this new technology will evolve in the future and make it more accessible to play from any device without the need for high performance. 
 In this project, we wanted to represent a model of how the company would operate in order to identify the factors necessary for growth.\\
 Although the entire drafting was based on a hypothetical structure of a cloud gaming service company it was possible to represent in detail all process steps and business-side evaluation criteria. In particular, the BPMN diagram and the Value Model diagram made it possible to show the unfolding of the process and to illustrate in a simple and intuitive way all the stages of developing and enjoying a video game on a cloud platform.\\
 Through CSFs, KGIs the KPIs it is possible to evaluate better strategies to achieve greater profits and reach as many people as possible.\\\\
 %
-As mentioned above unfortunately there was no real data available especially concerning the evaluation criteria that each company uses to define a business strategy, nevertheless it was possible to simulate a hypothetical case study in which a real company that uses this type of service could be placed
+As mentioned above unfortunately there was no real data available especially concerning the evaluation criteria that each company uses to define a business strategy, nevertheless it was possible to simulate a hypothetical case study in which a real company that uses this type of service could be placed. \\\\
+%
+%
+Chapter 6 of this project was focused on exploring how the architecture could be implemented on AWS. Although the specific architecture presented is not a deployed or tested solution, the goal of this chapter was to demonstrate that it is possible to create a functional cloud gaming platform using AWS services. The chapter provided an overview of the key AWS services that could be used to build the platform, and outlined how they could be integrated to create a cohesive system. While additional components or configuration details may be required for a real-world deployment, the architecture presented in this chapter serves as a starting point for anyone looking to build a cloud gaming platform on AWS. 
+
+
 \end{document}
 
 
